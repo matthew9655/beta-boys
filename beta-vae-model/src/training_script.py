@@ -23,25 +23,29 @@ set_random_seed(1990)
 def main(args):
     optimizer = utils.select_optimizer(optimizer=args.optimizer, base_learning_rate=args.base_learning_rate)
 
-    print("Creating data generators.......")
-    data_gen = ImageDataGenerator(
-        rescale=1 / 255.,
-        validation_split=args.val_split)
+    # print("Creating data generators.......")
+    # data_gen = ImageDataGenerator(
+    #     rescale=1 / 255.,
+    #     validation_split=args.val_split)
 
-    train_generator = data_gen.flow_from_directory(
-        args.data_dir,
-        target_size=(args.image_size, args.image_size),
-        batch_size=args.train_batch_size,
-        class_mode='categorical',
-        subset='training')
+    # train_generator = data_gen.flow_from_directory(
+    #     args.data_dir,
+    #     target_size=(args.image_size, args.image_size),
+    #     batch_size=args.train_batch_size,
+    #     class_mode='categorical',
+    #     subset='training')
 
-    validation_generator = data_gen.flow_from_directory(
-        args.data_dir,
-        target_size=(args.image_size, args.image_size),
-        batch_size=args.val_batch_size,
-        class_mode='categorical',
-        subset='validation')
+    # validation_generator = data_gen.flow_from_directory(
+    #     args.data_dir,
+    #     target_size=(args.image_size, args.image_size),
+    #     batch_size=args.val_batch_size,
+    #     class_mode='categorical',
+    #     subset='validation')
 
+    # TODO: insert class here for training and validation generator
+    train_generator = None
+    validation_generator = None
+    
     training_steps = math.ceil(train_generator.n / args.train_batch_size)
     validation_steps = math.ceil(validation_generator.n / args.val_batch_size)
 
