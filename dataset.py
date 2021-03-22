@@ -37,12 +37,12 @@ class CustomTensorDataset(Dataset):
         return self.data_tensor.size(0)
 
 
-def return_data(args):
-    name = args.dataset
-    dset_dir = args.dset_dir
-    batch_size = args.batch_size
-    num_workers = args.num_workers
-    image_size = args.image_size
+def return_data(dset, dset_dir, batch_size, num_workers, image_size):
+    name = dset
+    dset_dir = dset_dir
+    batch_size = batch_size
+    num_workers = num_workers
+    image_size = image_size
     assert image_size == 64, 'currently only image size of 64 is supported'
 
     if name.lower() == '3dchairs':
