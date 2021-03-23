@@ -17,9 +17,9 @@ if __name__ == "__main__":
 
     #hyperparamters
     epochs =  200
-    batch_size = 20
+    batch_size = 64
     latent_dim = 10
-    gamma = 1
+    gamma = 1000
     C_max = 0
     C_stop_iter = 0
     lr =  1e-5

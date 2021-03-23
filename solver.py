@@ -139,18 +139,15 @@ class Solver(object):
         pbar = tqdm(total=self.epochs)
         pbar.update(self.global_iter)
         while not out:
+            self.global_iter += 1
+            pbar.update(1)
             for x in self.data_loader:
-                self.global_iter += 1
-                pbar.update(1)
-
                 x = Variable(cuda(x, self.use_cuda))
                 x_recon, mu, logvar = self.net(x)
                 recon_loss = reconstruction_loss(x, x_recon, self.decoder_dist)
                 total_kld, dim_wise_kld, mean_kld = kl_divergence(mu, logvar)
 
                 C = torch.clamp(self.C_max/self.C_stop_iter*self.global_iter, 0, self.C_max.data[0])
-                print(recon_loss)
-                print(total_kld)
                 beta_vae_loss = recon_loss + self.gamma*(total_kld-C).abs()
                 self.optim.zero_grad()
                 beta_vae_loss.backward()
@@ -162,7 +159,7 @@ class Solver(object):
                 #                        recon_loss=recon_loss.data, total_kld=total_kld.data,
                 #                        dim_wise_kld=dim_wise_kld.data, mean_kld=mean_kld.data)
 
-                if self.global_iter%self.display_step == 0:
+            if self.global_iter%self.display_step == 0:
                 
                     pbar.write('iter: {}, elbo: {}'.format(
                         self.global_iter, beta_vae_loss[0]))
@@ -174,11 +171,11 @@ class Solver(object):
                     # pbar.write(var_str)
 
                     # if self.objective == 'B':
-                    #     pbar.write('C:{:.3f}'.format(C.data[0]))
+                    #     pbar.write('C:{:.3f}'.format(C.data[0])) 
 
-                if self.global_iter >= self.epochs:
-                    out = True
-                    break
+            if self.global_iter >= self.epochs:
+                out = True
+                break
 
         pbar.write("[Training Finished]")
         pbar.close()
