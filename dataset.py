@@ -62,7 +62,7 @@ def return_data(dset, dset_dir, batch_size, num_workers, image_size):
         dset = CustomImageFolder
 
     elif name.lower() == 'dsprites':
-        root = os.path.join(dset_dir, 'dsprites-dataset/dsprites_ndarray_co1sh3sc6or40x32y32_64x64.npz')
+        root = os.path.join(dset_dir, 'dsprites_ndarray_co1sh3sc6or40x32y32_64x64.npz')
         if not os.path.exists(root):
             import subprocess
             print('Now download dsprites-dataset')
