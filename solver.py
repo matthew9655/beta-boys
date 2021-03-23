@@ -99,7 +99,7 @@ class Solver(object):
         net = BetaVAE_B
 
         self.net = cuda(net(self.latent_dim, self.nc), self.use_cuda)
-        self.optim = optim.Adam(self.net.parameters(), lr=self.lr)
+        self.optim = optim.Adam(self.net.parameters(), lr=self.lr,betas=(0.9, 0.999))
 
         # self.viz_name = args.viz_name
         # self.viz_port = args.viz_port
@@ -160,9 +160,10 @@ class Solver(object):
                 #                        dim_wise_kld=dim_wise_kld.data, mean_kld=mean_kld.data)
 
             if self.global_iter%self.display_step == 0:
-                
-                    pbar.write('iter: {}, elbo: {}'.format(
-                        self.global_iter, beta_vae_loss[0]))
+                    pbar.write('[{}] recon_loss:{:.3f} total_kld:{:.3f} mean_kld:{:.3f}'.format(
++                        self.global_iter, recon_loss.item(), total_kld.item(), mean_kld.item()))
+                    # pbar.write('iter: {}, elbo: {}'.format(
+                    #     self.global_iter, beta_vae_loss[0]))
 
                     # var = logvar.exp().mean(0).data
                     # var_str = ''

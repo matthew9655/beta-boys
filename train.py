@@ -16,17 +16,17 @@ if __name__ == "__main__":
     dataset = 'dsprites'
 
     #hyperparamters
-    epochs =  200
-    batch_size = 64
+    epochs =  50
+    batch_size = 5000
     latent_dim = 10
-    gamma = 1000
+    gamma = 100
     C_max = 0
     C_stop_iter = 0
-    lr =  1e-5
+    lr =  5e-4
 
-    np.random.seed(0)
-    torch.manual_seed(0)
-    torch.cuda.manual_seed(0)
+    np.random.seed(1)
+    torch.manual_seed(1)
+    torch.cuda.manual_seed(1)
 
     net = Solver(dset_dir=dset_dir, dataset=dataset, epochs=epochs, batch_size=batch_size, latent_dim=latent_dim,
     gamma=gamma, C_max=C_max, C_stop_iter=C_stop_iter, lr=lr)
