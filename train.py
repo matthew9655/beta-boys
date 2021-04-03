@@ -5,9 +5,21 @@ import torch
 from solver import Solver
 from utils import str2bool
 from sprites_data import Sprites
+from model import BetaVAE_B
 
 torch.backends.cudnn.enabled = True
 torch.backends.cudnn.benchmark = True
+
+def save_model(model, model_name):
+    torch.save(model.encoder.state_dict(), './saved_model/{}_encoder.pt'.format(model_name))
+    torch.save(model.decoder.state_dict(), './saved_model/{}_decoder.pt'.format(model_name))
+
+def load_model(model, model_name):
+    model.encoder.load_state_dict(torch.load('./saved_model/{}_encoder.pt'.format(model_name)))
+    model.decoder.load_state_dict(torch.load('./saved_model/{}_decoder.pt'.format(model_name)))
+    model.encoder.eval()
+    model.decoder.eval()
+
     
     
 if __name__ == "__main__":
@@ -16,7 +28,7 @@ if __name__ == "__main__":
     dataset = 'dsprites'
 
     #hyperparamters
-    epochs =  50
+    epochs =  2
     batch_size = 5000
     latent_dim = 10
     gamma = 100
@@ -33,6 +45,12 @@ if __name__ == "__main__":
 
     
     net.train()
+    save_model(net.net, 'test')
+
+    model = BetaVAE_B(z_dim=latent_dim)
+    load_model(model, 'test')
+
+    print(model)
     
     
 

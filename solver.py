@@ -125,7 +125,7 @@ class Solver(object):
         # if not os.path.exists(self.output_dir):
         #     os.makedirs(self.output_dir, exist_ok=True)
 
-        # self.gather_step = args.gather_step
+        self.gather_step = 2
         self.display_step = 1
         # self.save_step = args.save_step
 
