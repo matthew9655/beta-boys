@@ -101,9 +101,9 @@ class Solver(object):
         self.net = cuda(net(self.latent_dim, self.nc), self.use_cuda)
         self.optim = optim.Adam(self.net.parameters(), lr=self.lr,betas=(0.9, 0.999))
 
-        self.viz_name = args.viz_name
-        self.viz_port = args.viz_port
-        self.viz_on = args.viz_on
+        self.viz_name = "main"
+        self.viz_port = 8097
+        self.viz_on = True
         self.win_recon = None
         self.win_kld = None
         self.win_mu = None
@@ -116,10 +116,10 @@ class Solver(object):
         #     os.makedirs(self.ckpt_dir, exist_ok=True)
         # self.ckpt_name = args.ckpt_name
 
-        # self.save_output = args.save_output
-        # self.output_dir = os.path.join(args.output_dir, args.viz_name)
-        # if not os.path.exists(self.output_dir):
-        #     os.makedirs(self.output_dir, exist_ok=True)
+        self.save_output = True
+        self.output_dir = os.path.join("", self.viz_name) # TODO: Fill directory name in quotation
+        if not os.path.exists(self.output_dir):
+            os.makedirs(self.output_dir, exist_ok=True)
 
         # self.gather_step = args.gather_step
         self.display_step = 1
