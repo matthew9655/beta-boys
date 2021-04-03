@@ -141,6 +141,9 @@ class Solver(object):
             index = randrange(self.batch_size)
             if index not in self.recon_indices:
                 self.recon_indices.append(index)
+        # Setting up file directory for plotting
+        if not os.path.exists("plot/"):
+            os.mkdir("plot")
 
     def train(self):
         self.net_mode(train=True)
@@ -211,4 +214,5 @@ class Solver(object):
     def plot(self, x_recon):
         if self.cur_batch == 0:
             for index in self.recon_indices:
-                plt.imsave("Image (Batch 1): " + str(index) + " " + "Epoch: " + str(self.global_iter) + ".png", np.resize(x_recon.detach().numpy(), (self.batch_size, 64, 64))[index])
+                path = os.path.join("plot/", "Image (Batch 1): " + str(index) + " " + "Epoch: " + str(self.global_iter) + ".png")
+                plt.imsave(path, np.resize(x_recon.detach().numpy(), (self.batch_size, 64, 64))[index], cmap='gray')
