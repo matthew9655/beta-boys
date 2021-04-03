@@ -14,6 +14,7 @@ from torch.autograd import Variable
 from torchvision.utils import make_grid, save_image
 from random import randrange
 import matplotlib.pyplot as plt
+import numpy as np
 
 from utils import cuda, grid2gif
 from model import BetaVAE_B
@@ -169,9 +170,7 @@ class Solver(object):
                 #                        recon_loss=recon_loss.data, total_kld=total_kld.data,
                 #                        dim_wise_kld=dim_wise_kld.data, mean_kld=mean_kld.data)
 
-                if self.cur_batch == 0:
-                    for index in self.recon_indices:
-                        plt.imsave("Image (Batch 1): " + str(index) + " " + "Epoch: " + str(self.global_iter), x_recon[index])
+                self.plot(x_recon)
                 # Updating which batch we are doing right now
                 self.cur_batch += 1
 
@@ -208,3 +207,8 @@ class Solver(object):
             self.net.train()
         else:
             self.net.eval()
+
+    def plot(self, x_recon):
+        if self.cur_batch == 0:
+            for index in self.recon_indices:
+                plt.imsave("Image (Batch 1): " + str(index) + " " + "Epoch: " + str(self.global_iter) + ".png", np.resize(x_recon.detach().numpy(), (self.batch_size, 64, 64))[index])
