@@ -101,15 +101,15 @@ class Solver(object):
         self.net = cuda(net(self.latent_dim, self.nc), self.use_cuda)
         self.optim = optim.Adam(self.net.parameters(), lr=self.lr,betas=(0.9, 0.999))
 
-        # self.viz_name = args.viz_name
-        # self.viz_port = args.viz_port
-        # self.viz_on = args.viz_on
+        self.viz_name = args.viz_name
+        self.viz_port = args.viz_port
+        self.viz_on = args.viz_on
         self.win_recon = None
         self.win_kld = None
         self.win_mu = None
         self.win_var = None
-        # if self.viz_on:
-        #     self.viz = visdom.Visdom(port=self.viz_port)
+        if self.viz_on:
+            self.viz = visdom.Visdom(port=self.viz_port)
 
         # self.ckpt_dir = os.path.join(args.ckpt_dir, args.viz_name)
         # if not os.path.exists(self.ckpt_dir):
@@ -153,11 +153,11 @@ class Solver(object):
                 beta_vae_loss.backward()
                 self.optim.step()
 
-                # if self.viz_on and self.global_iter%self.gather_step == 0:
-                #     self.gather.insert(iter=self.global_iter,
-                #                        mu=mu.mean(0).data, var=logvar.exp().mean(0).data,
-                #                        recon_loss=recon_loss.data, total_kld=total_kld.data,
-                #                        dim_wise_kld=dim_wise_kld.data, mean_kld=mean_kld.data)
+                if self.viz_on and self.global_iter%self.gather_step == 0:
+                    self.gather.insert(iter=self.global_iter,
+                                       mu=mu.mean(0).data, var=logvar.exp().mean(0).data,
+                                       recon_loss=recon_loss.data, total_kld=total_kld.data,
+                                       dim_wise_kld=dim_wise_kld.data, mean_kld=mean_kld.data)
 
             if self.global_iter%self.display_step == 0:
                     pbar.write('[{}] recon_loss:{:.3f} total_kld:{:.3f} mean_kld:{:.3f}'.format(
