@@ -171,8 +171,7 @@ class Solver(object):
 
                 if self.cur_batch == 0:
                     for index in self.recon_indices:
-                        plt.imshow(x[index])
-                        plt.savefig("Image (Batch 1): " + str(index) + " " + "Epoch: " + str(self.global_iter))
+                        plt.imsave("Image (Batch 1): " + str(index) + " " + "Epoch: " + str(self.global_iter), x_recon[index])
                 # Updating which batch we are doing right now
                 self.cur_batch += 1
 
