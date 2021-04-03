@@ -12,6 +12,8 @@ import torch.optim as optim
 import torch.nn.functional as F
 from torch.autograd import Variable
 from torchvision.utils import make_grid, save_image
+from random import randrange
+import matplotlib.pyplot as plt
 
 from utils import cuda, grid2gif
 from model import BetaVAE_B
@@ -77,12 +79,14 @@ class Solver(object):
         self.use_cuda = torch.cuda.is_available()
         self.epochs = epochs
         self.global_iter = 0
+        self.cur_batch = 0
 
         self.latent_dim = latent_dim
         self.gamma = gamma
         self.C_max = C_max
         self.C_stop_iter = C_stop_iter
         self.lr = lr
+        self.recon_indices = []
 
         if dataset.lower() == 'dsprites':
             self.nc = 1
@@ -90,7 +94,7 @@ class Solver(object):
         elif dataset.lower() == '3dchairs':
             self.nc = 3
             self.decoder_dist = 'gaussian'
-        elif adataset.lower() == 'celeba':
+        elif dataset.lower() == 'celeba':
             self.nc = 3
             self.decoder_dist = 'gaussian'
         else:
@@ -101,25 +105,25 @@ class Solver(object):
         self.net = cuda(net(self.latent_dim, self.nc), self.use_cuda)
         self.optim = optim.Adam(self.net.parameters(), lr=self.lr,betas=(0.9, 0.999))
 
-        self.viz_name = "main"
-        self.viz_port = 8097
-        self.viz_on = True
+        # self.viz_name = "main"
+        # self.viz_port = 8097
+        # self.viz_on = True
         self.win_recon = None
         self.win_kld = None
         self.win_mu = None
         self.win_var = None
-        if self.viz_on:
-            self.viz = visdom.Visdom(port=self.viz_port)
+        # if self.viz_on:
+        #     self.viz = visdom.Visdom(port=self.viz_port)
 
         # self.ckpt_dir = os.path.join(args.ckpt_dir, args.viz_name)
         # if not os.path.exists(self.ckpt_dir):
         #     os.makedirs(self.ckpt_dir, exist_ok=True)
         # self.ckpt_name = args.ckpt_name
 
-        self.save_output = True
-        self.output_dir = os.path.join("", self.viz_name) # TODO: Fill directory name in quotation
-        if not os.path.exists(self.output_dir):
-            os.makedirs(self.output_dir, exist_ok=True)
+        # self.save_output = True
+        # self.output_dir = os.path.join("", self.viz_name) # TODO: Fill directory name in quotation
+        # if not os.path.exists(self.output_dir):
+        #     os.makedirs(self.output_dir, exist_ok=True)
 
         # self.gather_step = args.gather_step
         self.display_step = 1
@@ -128,8 +132,14 @@ class Solver(object):
         self.dset_dir = dset_dir
         self.dataset = dataset
         self.batch_size = batch_size
-        self.data_loader = return_data(dset_dir=dset_dir, dset=self.dataset, batch_size=batch_size, image_size=64, num_workers=0)
+        self.data_loader, dset_size = return_data(dset_dir=dset_dir, dset=self.dataset, batch_size=batch_size, image_size=64, num_workers=0)
         self.gather = DataGather()
+
+        # Setting up indices for image sampling
+        while len(self.recon_indices) < 5:
+            index = randrange(self.batch_size)
+            if index not in self.recon_indices:
+                self.recon_indices.append(index)
 
     def train(self):
         self.net_mode(train=True)
@@ -153,11 +163,21 @@ class Solver(object):
                 beta_vae_loss.backward()
                 self.optim.step()
 
-                if self.viz_on and self.global_iter%self.gather_step == 0:
-                    self.gather.insert(iter=self.global_iter,
-                                       mu=mu.mean(0).data, var=logvar.exp().mean(0).data,
-                                       recon_loss=recon_loss.data, total_kld=total_kld.data,
-                                       dim_wise_kld=dim_wise_kld.data, mean_kld=mean_kld.data)
+                # if self.viz_on and self.global_iter%self.gather_step == 0:
+                #     self.gather.insert(iter=self.global_iter,
+                #                        mu=mu.mean(0).data, var=logvar.exp().mean(0).data,
+                #                        recon_loss=recon_loss.data, total_kld=total_kld.data,
+                #                        dim_wise_kld=dim_wise_kld.data, mean_kld=mean_kld.data)
+
+                if self.cur_batch == 0:
+                    for index in self.recon_indices:
+                        plt.imshow(x[index])
+                        plt.savefig("Image (Batch 1): " + str(index) + " " + "Epoch: " + str(self.global_iter))
+                # Updating which batch we are doing right now
+                self.cur_batch += 1
+
+            # Resetting batch size numbers after one epoch is done
+            self.cur_batch = 0 
 
             if self.global_iter%self.display_step == 0:
                     pbar.write('[{}] recon_loss:{:.3f} total_kld:{:.3f} mean_kld:{:.3f}'.format(

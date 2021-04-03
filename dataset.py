@@ -87,7 +87,7 @@ def return_data(dset, dset_dir, batch_size, num_workers, image_size):
 
     data_loader = train_loader
 
-    return data_loader
+    return data_loader, len(train_data)
 
 if __name__ == '__main__':
     transform = transforms.Compose([
