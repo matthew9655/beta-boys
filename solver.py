@@ -215,4 +215,4 @@ class Solver(object):
         if self.cur_batch == 0:
             for index in self.recon_indices:
                 path = os.path.join("plot/", "Image (Batch 1): " + str(index) + " " + "Epoch: " + str(self.global_iter) + ".png")
-                plt.imsave(path, np.resize(x_recon.detach().numpy(), (self.batch_size, 64, 64))[index], cmap='gray')
+                plt.imsave(path, np.resize(x_recon.detach().to('cpu').numpy(), (self.batch_size, 64, 64))[index], cmap='gray')

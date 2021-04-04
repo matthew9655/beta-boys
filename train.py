@@ -6,6 +6,7 @@ from solver import Solver
 from utils import str2bool
 from sprites_data import Sprites
 from model import BetaVAE_B
+from plots import latent_visual
 
 torch.backends.cudnn.enabled = True
 torch.backends.cudnn.benchmark = True
@@ -20,8 +21,11 @@ def load_model(model, model_name):
     model.encoder.eval()
     model.decoder.eval()
 
-    
-    
+def convert_to_model_format(images):
+    reshaped = np.reshape(images, (images.shape[0], 1, 64, 64))
+    return torch.from_numpy(reshaped)
+
+
 if __name__ == "__main__":
     #dataset settings
     dset_dir = 'data'
@@ -47,10 +51,17 @@ if __name__ == "__main__":
     net.train()
     save_model(net.net, 'test')
 
-    model = BetaVAE_B(z_dim=latent_dim)
-    load_model(model, 'test')
+    # model = BetaVAE_B(z_dim=latent_dim)
+    # load_model(model, 'test')
 
-    print(model)
+    data = np.load('data/dsprites_ndarray_co1sh3sc6or40x32y32_64x64.npz', encoding='bytes')
+    data = torch.from_numpy(data['imgs']).unsqueeze(1).float()
+    latent_visual(model, data[:10], latent_dim=latent_dim)
+    
+
+
+
+
     
     
 

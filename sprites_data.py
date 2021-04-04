@@ -21,7 +21,7 @@ def show_images_grid(imgs_, num_images=25):
 
 class Sprites():
     def __init__(self):
-        dataset_zip = np.load('data/dsprites_ndarray_co1sh3sc6or40x32y32_64x64.npz', allow_pickle=True, encoding='latin1')
+        dataset_zip = np.load('data/dsprites_ndarray_co1sh3sc6or40x32y32_64x64.npz', allow_pickle=True, encoding='bytes')
         self.imgs = dataset_zip['imgs']
         self.latents_values = dataset_zip['latents_values']
         self.latents_classes = dataset_zip['latents_classes']
