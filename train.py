@@ -6,7 +6,7 @@ from solver import Solver
 from utils import str2bool
 from sprites_data import Sprites
 from model import BetaVAE_B
-from plots import latent_visual
+from plots import latent_visual, recon
 
 torch.backends.cudnn.enabled = True
 torch.backends.cudnn.benchmark = True
@@ -32,13 +32,13 @@ if __name__ == "__main__":
     dataset = 'dsprites'
 
     #hyperparamters
-    epochs =  2
+    epochs = 1000
     batch_size = 5000
     latent_dim = 10
     gamma = 100
     C_max = 0
     C_stop_iter = 0
-    lr =  5e-4
+    lr =  1e-3
 
     np.random.seed(1)
     torch.manual_seed(1)
@@ -48,15 +48,19 @@ if __name__ == "__main__":
     gamma=gamma, C_max=C_max, C_stop_iter=C_stop_iter, lr=lr)
 
     
-    net.train()
-    save_model(net.net, 'test')
+    # net.train()
+    # save_model(net.net, '1000_epochs')
 
-    # model = BetaVAE_B(z_dim=latent_dim)
-    # load_model(model, 'test')
-
+    model = BetaVAE_B(z_dim=latent_dim)
+    load_model(model, '1000_epochs')
     data = np.load('data/dsprites_ndarray_co1sh3sc6or40x32y32_64x64.npz', encoding='bytes')
-    data = torch.from_numpy(data['imgs']).unsqueeze(1).float()
-    latent_visual(model, data[:10], latent_dim=latent_dim)
+    rand = np.random.randint(0, 300000, 10)
+    data = torch.from_numpy(data['imgs'][rand]).unsqueeze(1).float()
+    
+    latent_visual(model, data, latent_dim=latent_dim)
+
+    # recon code
+    # recon(model, data, latent_dim)
     
 
 
