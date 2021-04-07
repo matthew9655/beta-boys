@@ -144,6 +144,8 @@ class Solver(object):
         # Setting up file directory for plotting
         if not os.path.exists("plot/"):
             os.mkdir("plot")
+            os.mkdir("plot/recon")
+            os.mkdir("plot/latent")
 
     def train(self):
         self.net_mode(train=True)
@@ -173,7 +175,7 @@ class Solver(object):
                 #                        recon_loss=recon_loss.data, total_kld=total_kld.data,
                 #                        dim_wise_kld=dim_wise_kld.data, mean_kld=mean_kld.data)
 
-                self.plot(x_recon)
+                self.plot_recon(x_recon)
                 # Updating which batch we are doing right now
                 self.cur_batch += 1
 
@@ -211,8 +213,8 @@ class Solver(object):
         else:
             self.net.eval()
 
-    def plot(self, x_recon):
+    def plot_recon(self, x_recon):
         if self.cur_batch == 0:
             for index in self.recon_indices:
-                path = os.path.join("plot/", "Image (Batch 1): " + str(index) + " " + "Epoch: " + str(self.global_iter) + ".png")
+                path = os.path.join("plot/recon", "Image (Batch 1): " + str(index) + " " + "Epoch: " + str(self.global_iter) + ".png")
                 plt.imsave(path, np.resize(x_recon.detach().numpy(), (self.batch_size, 64, 64))[index], cmap='gray')
