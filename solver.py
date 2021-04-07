@@ -126,7 +126,7 @@ class Solver(object):
         # if not os.path.exists(self.output_dir):
         #     os.makedirs(self.output_dir, exist_ok=True)
 
-        # self.gather_step = args.gather_step
+        self.gather_step = 2
         self.display_step = 1
         # self.save_step = args.save_step
 
@@ -216,5 +216,10 @@ class Solver(object):
     def plot_recon(self, x_recon):
         if self.cur_batch == 0:
             for index in self.recon_indices:
+<<<<<<< HEAD
                 path = os.path.join("plot/recon", "Image (Batch 1): " + str(index) + " " + "Epoch: " + str(self.global_iter) + ".png")
                 plt.imsave(path, np.resize(x_recon.detach().numpy(), (self.batch_size, 64, 64))[index], cmap='gray')
+=======
+                path = os.path.join("plot/", "Image (Batch 1): " + str(index) + " " + "Epoch: " + str(self.global_iter) + ".png")
+                plt.imsave(path, np.resize(x_recon.detach().to('cpu').numpy(), (self.batch_size, 64, 64))[index], cmap='gray')
+>>>>>>> d2d3d839f00881f613a362a1e0795dc5e53310d2
