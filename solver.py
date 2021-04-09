@@ -17,7 +17,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 from utils import cuda, grid2gif
-from model import BetaVAE_B
+from model import BetaVAE_B, BetaVAE_H
 from dataset import return_data
 
 
@@ -76,7 +76,7 @@ class DataGather(object):
 
 class Solver(object):
     def __init__(self, epochs=2000, latent_dim = 10, gamma=1000, C_max=25, C_stop_iter=1e5, lr=200,
-    dset_dir='', dataset='', batch_size=64):
+    dset_dir='', dataset='', batch_size=64, model='beta'):
         self.use_cuda = torch.cuda.is_available()
         self.epochs = epochs
         self.global_iter = 0
@@ -100,8 +100,11 @@ class Solver(object):
             self.decoder_dist = 'gaussian'
         else:
             raise NotImplementedError
-
-        net = BetaVAE_B
+        
+        if model == 'beta':
+            net = BetaVAE_H
+        else:
+            net = BetaVAE_B
 
         self.net = cuda(net(self.latent_dim, self.nc), self.use_cuda)
         self.optim = optim.Adam(self.net.parameters(), lr=self.lr,betas=(0.9, 0.999))
@@ -175,7 +178,7 @@ class Solver(object):
                 #                        recon_loss=recon_loss.data, total_kld=total_kld.data,
                 #                        dim_wise_kld=dim_wise_kld.data, mean_kld=mean_kld.data)
 
-                self.plot_recon(x_recon)
+                # self.plot(x_recon)
                 # Updating which batch we are doing right now
                 self.cur_batch += 1
 
@@ -216,10 +219,5 @@ class Solver(object):
     def plot_recon(self, x_recon):
         if self.cur_batch == 0:
             for index in self.recon_indices:
-<<<<<<< HEAD
                 path = os.path.join("plot/recon", "Image (Batch 1): " + str(index) + " " + "Epoch: " + str(self.global_iter) + ".png")
                 plt.imsave(path, np.resize(x_recon.detach().numpy(), (self.batch_size, 64, 64))[index], cmap='gray')
-=======
-                path = os.path.join("plot/", "Image (Batch 1): " + str(index) + " " + "Epoch: " + str(self.global_iter) + ".png")
-                plt.imsave(path, np.resize(x_recon.detach().to('cpu').numpy(), (self.batch_size, 64, 64))[index], cmap='gray')
->>>>>>> d2d3d839f00881f613a362a1e0795dc5e53310d2

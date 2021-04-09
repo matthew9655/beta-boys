@@ -69,7 +69,8 @@ def return_data(dset, dset_dir, batch_size, num_workers, image_size):
             subprocess.call(['./download_dsprites.sh'])
             print('Finished')
         data = np.load(root, encoding='bytes')
-        data = torch.from_numpy(data['imgs']).unsqueeze(1).float()
+        rand = np.random.permutation(737280)[:150000]
+        data = torch.from_numpy(data['imgs'][rand]).unsqueeze(1).float()
         train_kwargs = {'data_tensor':data}
         dset = CustomTensorDataset
 

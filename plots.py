@@ -38,7 +38,7 @@ def latent_visual(model, images, latent_dim):
         num_latent_dims = latent_dim
 
         num_latent_traverse = 10
-        latent_traverse_arr = torch.linspace(-30, 30, 10)
+        latent_traverse_arr = torch.linspace(-3, 3, 10)
         
         zs = torch.zeros(num_images * num_latent_traverse * num_latent_dims, num_latent_dims)
         for i in range(num_images):
