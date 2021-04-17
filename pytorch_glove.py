@@ -104,10 +104,10 @@ class Glove(nn.Module):
         target_bias = self.u_bias(context_word_lookup).squeeze(1)
 
         # elements of the co-occurence matrix
-        co_occurrences = torch.tensor([self.comat[center_word_lookup[i].item(), context_word_lookup[i].item()] for i in range(BATCH_SIZE)])
+        co_occurrences = torch.tensor([self.comat[center_word_lookup[i].item(), context_word_lookup[i].item()] for i in range(BATCH_SIZE)]).cuda()
         
         # weight_fn applied to non-zero co-occurrences
-        weights = torch.tensor([self.weight_fn(var) for var in co_occurrences])
+        weights = torch.tensor([self.weight_fn(var) for var in co_occurrences]).cuda()
 
         # the loss as described in the paper
         loss = torch.sum(torch.pow((torch.sum(center_embed * target_embed, dim=1)
@@ -159,6 +159,7 @@ def train_glove(comat):
         for batch in progress_bar(range(num_batches)):
             model.zero_grad()
             data = gen_batch(model, BATCH_SIZE)
+            data = data[0].cuda(), data[1].cuda() 
             loss = model(*data)
             loss.backward()
             optimizer.step()
