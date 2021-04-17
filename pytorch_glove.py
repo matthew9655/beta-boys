@@ -149,6 +149,7 @@ def gen_batch(model, batch_size=BATCH_SIZE):
 def train_glove(comat):
     losses = []
     model = Glove(vocab_size, comat, embedding_size=EMBEDDING_SIZE, x_max=X_MAX, alpha=ALPHA)
+    model = model.to("cuda:0")
     optimizer = optim.Adagrad(model.parameters(), lr = LEARNING_RATE)
     
     for epoch in range(EPOCHS):
