@@ -7,9 +7,9 @@ import numpy as np
 import torch
 import torch.optim as optim
 import torch.nn as nn
+import nltk
 
 import progressbar
-progressbar.streams.wrap_stderr() 
 
 #from sklearn.datasets import fetch_20newsgroups
 
