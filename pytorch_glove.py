@@ -171,6 +171,14 @@ def train_glove(comat):
 
 model, losses = train_glove(co_occ_mat)
 
+# Saving and loading code
+torch.save(model, "model.pt")
+torch.save(losses, "loss.pt")
+torch.save(word_to_ix, "idxmap.pt")
+
+# model = torch.load("model.pt")
+# losses = torch.load("loss.pt")
+# word_to_ix = torch.load("idx.pt")
 
 # Plot loss fn
 def plot_loss_fn(losses, title):
@@ -178,7 +186,6 @@ def plot_loss_fn(losses, title):
     plt.xlabel('Epoch')
     plt.ylabel('Loss')
     plt.title(title)
-    plt.figure()
 
 plot_loss_fn(losses, "GloVe loss function")
 
@@ -194,16 +201,6 @@ if EMBEDDING_SIZE == 2:
 		plt.annotate(ix_to_word[word_ind], xy=(x, y), xytext=(5, 2),
 			textcoords='offset points', ha='right', va='bottom')
 	plt.savefig("glove.png")
-
-
-## Save embeddings
-#f = open("embeddings_with_glove.txt","w+", encoding="utf-8")
-#for word in vocab:
-#  input = torch.autograd.Variable(torch.LongTensor([word_to_ix[word]])) 
-#  vector = model.embeddings()[input.item()]
-#  weight_list = vector.numpy().tolist()
-#  f.write(word + ' ' + ' '.join(str(e) for e in weight_list) + '\n')
-#f.close()
 
 # TESTS
 # word similarity, word analogies
@@ -240,3 +237,7 @@ def analogy(w1, w2, w3, n=5, filter_given=True):
         closest_words = [t for t in closest_words if t[0] not in [w1, w2, w3]]
         
     print_tuples(closest_words[:n])
+
+# vector = get_word("thank", model, word_to_ix)
+# print(vector)
+# print(closest(vector, word_to_ix))
