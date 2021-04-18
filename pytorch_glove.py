@@ -8,6 +8,7 @@ import torch
 import torch.optim as optim
 import torch.nn as nn
 import nltk
+import
 
 import progressbar
 
@@ -35,9 +36,9 @@ EPOCHS = 50
 
 #DATA PROCESSING
 # Open and read in text
-text_file = open('combined_speech.txt', 'r')
-raw_text = text_file.read().lower()
-text_file.close()
+# text_file = open('combined_speech.txt', 'r')
+# raw_text = text_file.read().lower()
+# text_file.close()
 
 #https://scikit-learn.org/0.19/modules/generated/sklearn.datasets.fetch_20newsgroups.html#sklearn.datasets.fetch_20newsgroups
 #https://scikit-learn.org/0.19/datasets/twenty_newsgroups.html
@@ -46,7 +47,28 @@ text_file.close()
 #raw_text = ' '.join(e for e in newsgroup.data)
 
 # Create tokenized text (list) and vocabulary (set of unique words)
-token_text = word_tokenize(raw_text)
+# token_text = word_tokenize(raw_text)
+# len_token_text = len(token_text)
+
+with open('realdonaldtrump.csv') as csv_file:
+    csv_reader = csv.reader(csv_file, delimiter=',')
+    raw_text = ''
+    line_count = 0
+    for row in csv_reader:
+        if line_count != 0:
+            raw_text += row[2].lower() + ' '
+            line_count += 1
+        else:
+            line_count += 1
+
+# Create tokenized text (list) and vocabulary (set of unique words)
+preproc_text = word_tokenize(raw_text)
+token_text = []
+for token in preproc_text:
+  if '@' in token or 'http' in token or '#' in token:
+    pass
+  else:
+    token_text.append(token)
 len_token_text = len(token_text)
 vocab = set(token_text)
 vocab_size = len(vocab)
@@ -174,7 +196,7 @@ model, losses = train_glove(co_occ_mat)
 # Saving and loading code
 torch.save(model, "model.pt")
 torch.save(losses, "loss.pt")
-torch.save(word_to_ix, "idxmap.pt")
+torch.save(word_to_ix, "idx.pt")
 
 # model = torch.load("model.pt")
 # losses = torch.load("loss.pt")
