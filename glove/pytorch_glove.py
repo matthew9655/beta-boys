@@ -50,7 +50,7 @@ EPOCHS = 50
 # token_text = word_tokenize(raw_text)
 # len_token_text = len(token_text)
 
-with open('realdonaldtrump.csv') as csv_file:
+with open('tweets.csv') as csv_file:
     csv_reader = csv.reader(csv_file, delimiter=',')
     raw_text = ''
     line_count = 0
