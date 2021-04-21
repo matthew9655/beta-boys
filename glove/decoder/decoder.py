@@ -110,16 +110,15 @@ def min_dist(vec, word_vec):
             min = dist
     return idx
 
-def decode(recon, model, word_vec):
-    words, embedding = word_vectors(model, word_to_ix)
-    sentence, sent = [], []
-    for i in range(7023):
-        for j in range(64):
-            w = words[min_dist(recon[i][j], embedding)]
-            sent.append(w)
-        sentence.append(sent)
-        sent = []
-    return sentence
+def decoder(learned_embeddings, model, word_to_ix):
+  sentence = []
+  sent = []
+  for i in range(7023):
+    for j in range(64):
+      sent.append(closest(learned_embeddings[i][j], word_to_ix)[0][0])
+    sentence.append(sent)
+    sent = []
+  return sentence
 
 
 if __name__ == "__main__":
@@ -130,6 +129,6 @@ if __name__ == "__main__":
     word_to_ix = torch.load('idx.pt', map_location='cpu')
     recon = torch.load('tweets_recon.pt', map_location='cpu')
     
-    decoded_sent = decode(recon, model, word_vec)
+    decoded_sent = decode(recon, model, word_to_ix)
     torch.save(decoded_sent, 'decoded_sent.pt')
 
