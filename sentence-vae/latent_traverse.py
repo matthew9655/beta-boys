@@ -58,19 +58,7 @@ def main(args):
     first_batch = next(iter(data_loader))
     
 
-    #recon
-    # print('RECON')
-    # num_samp = first_batch['input'].size()[0]
-    # logp, mean, logv, z = model(first_batch['input'], first_batch['length'], recon=True)
-    # cuda_z = to_var(z).float()
-    # model =  model.cuda()
-    # samples,_ = model.inference(z=cuda_z)
-    # print(*idx2word(first_batch['input'], i2w=i2w, pad_idx=w2i['<pad>']), sep='\n')
-    # print('---------------')
-    # print(*idx2word(samples, i2w=i2w, pad_idx=w2i['<pad>']), sep='\n')
-
-    # latent interpolation\
-    print('INTERPOLATION')
+    print('TRAVERSALS')
     num_samp = 1
     z = torch.randn((num_samp, args.latent_size)).cuda()
     num_latent_traverse = 10
@@ -90,6 +78,7 @@ def main(args):
     for i in range(num_samp):
         inter_cuda_z = to_var(zs[i]).float()
         samples,_ = model.inference(z=inter_cuda_z)
+        print('sample {}'.format(i))
         print('---------------')
         print(*idx2word(samples, i2w=i2w, pad_idx=w2i['<pad>']), sep='\n')
         print('---------------')

@@ -1,6 +1,6 @@
 # Sentence Variational Autoencoder
 
-## The code mainly builds off of [timbmg's repository](https://github.com/timbmg/Sentence-VAE) which is a reimplementation of the [paper](https://arxiv.org/pdf/2006.00693.pdf) 
+## The code mainly builds off of [timbmg's repository](https://github.com/timbmg/Sentence-VAE) which is a reimplementation of [Improving Disentangled Text Representation Learning with Information-Theoretic Guidance](https://arxiv.org/pdf/2006.00693.pdf) 
 
 ## Training
 To run the training, please download the Penn Tree Bank data first (download from [Tomas Mikolov's webpage](http://www.fit.vutbr.cz/~imikolov/rnnlm/simple-examples.tgz)). The code expects to find at least `ptb.train.txt` and `ptb.valid.txt` in the specified data directory. The data can also be donwloaded with the `dowloaddata.sh` script.
