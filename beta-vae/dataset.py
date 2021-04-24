@@ -45,29 +45,17 @@ def return_data(dset, dset_dir, batch_size, num_workers, image_size):
     image_size = image_size
     assert image_size == 64, 'currently only image size of 64 is supported'
 
-    if name.lower() == '3dchairs':
-        root = os.path.join(dset_dir, '3DChairs')
-        transform = transforms.Compose([
-            transforms.Resize((image_size, image_size)),
-            transforms.ToTensor(),])
-        train_kwargs = {'root':root, 'transform':transform}
-        dset = CustomImageFolder
-
-    elif name.lower() == 'celeba':
-        root = os.path.join(dset_dir, 'CelebA')
-        transform = transforms.Compose([
-            transforms.Resize((image_size, image_size)),
-            transforms.ToTensor(),])
-        train_kwargs = {'root':root, 'transform':transform}
-        dset = CustomImageFolder
+    if name.lower() == 'celeba':
+        root = os.path.join(dset_dir, 'celebA.pt')
+        data = torch.load(root)
+        data = data.unsqueeze(1).float()
+        train_kwargs = {'data_tensor':data}
+        dset = CustomTensorDataset
 
     elif name.lower() == 'dsprites':
         root = os.path.join(dset_dir, 'dsprites_ndarray_co1sh3sc6or40x32y32_64x64.npz')
         if not os.path.exists(root):
-            import subprocess
-            print('Now download dsprites-dataset')
-            subprocess.call(['./download_dsprites.sh'])
-            print('Finished')
+            print('dsprites npz file does not exist')
         data = np.load(root, encoding='bytes')
         rand = np.random.permutation(737280)[:150000]
         data = torch.from_numpy(data['imgs'][rand]).unsqueeze(1).float()
@@ -91,17 +79,4 @@ def return_data(dset, dset_dir, batch_size, num_workers, image_size):
     return data_loader, len(train_data)
 
 if __name__ == '__main__':
-    transform = transforms.Compose([
-        transforms.Resize((64, 64)),
-        transforms.ToTensor(),])
-
-    dset = CustomImageFolder('data/CelebA', transform)
-    loader = DataLoader(dset,
-                       batch_size=32,
-                       shuffle=True,
-                       num_workers=1,
-                       pin_memory=False,
-                       drop_last=True)
-
-    images1 = iter(loader).next()
-    import ipdb; ipdb.set_trace()
+    pass

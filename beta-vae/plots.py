@@ -80,10 +80,6 @@ def recon(model, images, latent_dim):
             plt.imsave('plot/recon/recon_{}.png'.format(i), x_recon[i], cmap='gray')
 
 
-
-
-
-
 if __name__ == "__main__":
     pass
     

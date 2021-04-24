@@ -92,12 +92,9 @@ class Solver(object):
         if dataset.lower() == 'dsprites':
             self.nc = 1
             self.decoder_dist = 'bernoulli'
-        elif dataset.lower() == '3dchairs':
-            self.nc = 3
-            self.decoder_dist = 'gaussian'
         elif dataset.lower() == 'celeba':
-            self.nc = 3
-            self.decoder_dist = 'gaussian'
+            self.nc = 1
+            self.decoder_dist = 'bernoulli'
         else:
             raise NotImplementedError
         
@@ -106,32 +103,13 @@ class Solver(object):
         else:
             net = BetaVAE_B
 
+        self.model = model
+
         self.net = cuda(net(self.latent_dim, self.nc), self.use_cuda)
         self.optim = optim.Adam(self.net.parameters(), lr=self.lr,betas=(0.9, 0.999))
 
-        # self.viz_name = "main"
-        # self.viz_port = 8097
-        # self.viz_on = True
-        self.win_recon = None
-        self.win_kld = None
-        self.win_mu = None
-        self.win_var = None
-        # if self.viz_on:
-        #     self.viz = visdom.Visdom(port=self.viz_port)
-
-        # self.ckpt_dir = os.path.join(args.ckpt_dir, args.viz_name)
-        # if not os.path.exists(self.ckpt_dir):
-        #     os.makedirs(self.ckpt_dir, exist_ok=True)
-        # self.ckpt_name = args.ckpt_name
-
-        # self.save_output = True
-        # self.output_dir = os.path.join("", self.viz_name) # TODO: Fill directory name in quotation
-        # if not os.path.exists(self.output_dir):
-        #     os.makedirs(self.output_dir, exist_ok=True)
-
         self.gather_step = 2
         self.display_step = 1
-        # self.save_step = args.save_step
 
         self.dset_dir = dset_dir
         self.dataset = dataset
@@ -149,6 +127,7 @@ class Solver(object):
             os.mkdir("plot")
             os.mkdir("plot/recon")
             os.mkdir("plot/latent")
+            os.mkdir("plot/training_plots")
 
     def train(self):
         self.net_mode(train=True)
@@ -157,6 +136,7 @@ class Solver(object):
 
         pbar = tqdm(total=self.epochs)
         pbar.update(self.global_iter)
+        C_validator = 0
         while not out:
             self.global_iter += 1
             pbar.update(1)
@@ -172,33 +152,24 @@ class Solver(object):
                 beta_vae_loss.backward()
                 self.optim.step()
 
-                # if self.viz_on and self.global_iter%self.gather_step == 0:
-                #     self.gather.insert(iter=self.global_iter,
-                #                        mu=mu.mean(0).data, var=logvar.exp().mean(0).data,
-                #                        recon_loss=recon_loss.data, total_kld=total_kld.data,
-                #                        dim_wise_kld=dim_wise_kld.data, mean_kld=mean_kld.data)
+                if self.cur_batch == 0 and self.model != 'beta' and C_validator < self.C_max:
+                    current_C = C.data[0]
+                    if C_validator == 0  or current_C - C_validator > 0.1:
+                        self.plot_recon(x_recon, current_C)
+                        pbar.write('C = {}'.format(current_C))
+                        pbar.write('plot saved at plot/training_plots')
+                        C_validator = current_C + 0.1
 
-                # self.plot(x_recon)
+
                 # Updating which batch we are doing right now
                 self.cur_batch += 1
 
             # Resetting batch size numbers after one epoch is done
             self.cur_batch = 0 
-
+            
             if self.global_iter%self.display_step == 0:
                     pbar.write('[{}] recon_loss:{:.3f} total_kld:{:.3f} mean_kld:{:.3f}'.format(
 +                        self.global_iter, recon_loss.item(), total_kld.item(), mean_kld.item()))
-                    # pbar.write('iter: {}, elbo: {}'.format(
-                    #     self.global_iter, beta_vae_loss[0]))
-
-                    # var = logvar.exp().mean(0).data
-                    # var_str = ''
-                    # for j, var_j in enumerate(var):
-                    #     var_str += 'var{}:{:.4f} '.format(j+1, var_j)
-                    # pbar.write(var_str)
-
-                    # if self.objective == 'B':
-                    #     pbar.write('C:{:.3f}'.format(C.data[0])) 
 
             if self.global_iter >= self.epochs:
                 out = True
@@ -216,8 +187,9 @@ class Solver(object):
         else:
             self.net.eval()
 
-    def plot_recon(self, x_recon):
-        if self.cur_batch == 0:
-            for index in self.recon_indices:
-                path = os.path.join("plot/recon", "Image (Batch 1): " + str(index) + " " + "Epoch: " + str(self.global_iter) + ".png")
-                plt.imsave(path, np.resize(x_recon.detach().numpy(), (self.batch_size, 64, 64))[index], cmap='gray')
+    def plot_recon(self, x_recon, C):
+            recon = F.sigmoid(x_recon.squeeze(1))
+            recon = recon.detach().cpu().numpy()
+            for index in range(len(self.recon_indices)):
+                path = os.path.join("plot/training_plots/", "C_{}_Image_{}.png".format(C, self.recon_indices[index]))
+                plt.imsave(path, recon[index], cmap='gray')
