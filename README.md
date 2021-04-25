@@ -8,4 +8,4 @@ Code for training the both beta-VAE typed models proposed by [Higgins et al.](ht
 Code for training a glove model given a corpus
 
 ### sentence-vae
-Code for training the RNNVAE as proposec by [Cheng et al.](https://arxiv.org/pdf/2006.00693.pdf)
+Code for training the modified RNNVAE as proposed by [Cheng et al.](https://arxiv.org/pdf/2006.00693.pdf)
